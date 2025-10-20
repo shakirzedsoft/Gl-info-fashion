@@ -14,7 +14,8 @@ import {
   Divider,
   Button,
   Badge,
-  Skeleton
+  Skeleton,
+  Tooltip
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -28,67 +29,42 @@ import { useNavigate } from 'react-router-dom';
 
 export default function ProfileSection() {
   const navigate = useNavigate();
-  const { logout, userData,loading } = useAuth();
-
-  // const convertFirestoreTimestamp = (timestamp) => {
-  //   if (
-  //     !timestamp ||
-  //     typeof timestamp?.seconds !== "number" ||
-  //     typeof timestamp?.nanoseconds !== "number"
-  //   ) {
-  //     return "Invalid date";
-  //   }
-
-  //   const milliseconds = timestamp?.seconds * 1000 + timestamp?.nanoseconds / 1e6;
-  //   const date = new Date(milliseconds);
-
-  //   if (isNaN(date?.getTime())) {
-  //     return "Invalid date";
-  //   }
-
-  //   return date.toLocaleString("en-US", {
-  //     year: "numeric",
-  //     month: "long",
-  //     day: "numeric",
-  //     hour: "2-digit",
-  //     minute: "2-digit",
-  //   });
-  // };
+  const { logout, userData, loading } = useAuth();
 
 
   const convertFirestoreTimestamp = (timestamp) => {
-  try {
-    let date;
-    if (timestamp?.seconds && timestamp?.nanoseconds) {
-      const milliseconds = timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6;
-      date = new Date(milliseconds);
+    try {
+      let date;
+      if (timestamp?.seconds && timestamp?.nanoseconds) {
+        const milliseconds = timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6;
+        date = new Date(milliseconds);
+      }
+      else if (typeof timestamp === "string" && !isNaN(Date.parse(timestamp))) {
+        date = new Date(timestamp);
+      }
+      else {
+        date = new Date();
+      }
+      return date.toLocaleString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+    } catch (err) {
+      console.error("Date conversion error:", err);
+      return new Date().toLocaleString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
     }
-    else if (typeof timestamp === "string" && !isNaN(Date.parse(timestamp))) {
-      date = new Date(timestamp);
-    }
-    else {
-      date = new Date();
-    }
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  } catch (err) {
-    console.error("Date conversion error:", err);
-    return new Date().toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  }
-};
+  };
 
 
   const handleLogout = async () => {
@@ -136,9 +112,13 @@ export default function ProfileSection() {
                 Personal Information
               </Typography>
             </Box>
-            <IconButton onClick={handleLogout}>
-              <LogoutIcon />
-            </IconButton>
+
+            <Tooltip title="Logout" arrow>
+              <IconButton onClick={handleLogout}>
+                <LogoutIcon />
+              </IconButton>
+            </Tooltip>
+            
           </Box>
 
           {/* Avatar */}

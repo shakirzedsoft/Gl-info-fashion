@@ -5,6 +5,7 @@ import {
   Link,
   Stack,
   Toolbar,
+  Tooltip,
   Typography,
   useMediaQuery,
   useTheme,
@@ -92,19 +93,6 @@ function Header() {
               </Stack>
             </Toolbar>
           </AppBar>
-          {/* <AppBar
-            position="static"
-            elevation={0}
-            sx={{
-              backgroundColor: "transparent",
-              boxShadow: "0px 4px 8px -2px rgba(0, 0, 0, 0.1)", // ⬅️ soft bottom shadow
-              color: "#2B0000",
-              px: { xs: 2, md: 6 },
-              py: 2,
-              minHeight: 48,
-              textAlign: "center",
-            }}
-          > */}
 
           <AppBar
             position="fixed"
@@ -231,6 +219,7 @@ function Header() {
                 {headerIcons?.map((image, k) => (
                   <Stack spacing={2} key={k}>
                     {image?.isLink ? (
+                      <Tooltip title="Profile" arrow>
                       <Link
                         href="/profile"
                         sx={{
@@ -244,6 +233,7 @@ function Header() {
                           width={25}
                         />
                       </Link>
+                      </Tooltip>
                     ) : (
                       <CardMedia
                         component="img"
