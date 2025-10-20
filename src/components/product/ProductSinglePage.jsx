@@ -26,8 +26,8 @@ import {
   ShoppingCart,
   NavigateNext,
 } from "@mui/icons-material";
-import locationIcon from "../../assets/header/location.png";
-import downArrow from "../../assets/header/down-arrow.png";
+import locationIcon from "../../assets/header/locationIcon.png";
+import downArrow from "../../assets/header/down-arrowIcon.png";
 import ProdCard from "./ProductCard";
 
 function TabPanel({ children, value, index }) {

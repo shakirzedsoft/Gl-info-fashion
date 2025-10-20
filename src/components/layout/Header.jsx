@@ -11,16 +11,16 @@ import {
   useTheme,
 } from "@mui/material";
 
-import wishlistImg from "../../assets/header/Wishlist.png";
-import cartImg from "../../assets/header/Cart.png";
-import userImg from "../../assets/header/User.png";
-import location from "../../assets/header/location.png";
+import wishlistImg from "../../assets/header/WishlistIcon.png";
+import cartImg from "../../assets/header/CartIcon.png";
+import userImg from "../../assets/header/UserIcon.png";
+import location from "../../assets/header/locationIcon.png";
 
-import logo from "../../assets/header/logo.png";
-import logoMob from "../../assets/header/logo-mob.png";
-import downArrow from "../../assets/header/down-arrow.png";
-import searchIcon from "../../assets/header/search.png";
-import moreIcon from "../../assets/header/more.png";
+import logo from "../../assets/header/logoIcon.png";
+import logoMob from "../../assets/header/logo-mobIcon.png";
+import downArrow from "../../assets/header/down-arrowIcon.png";
+import searchIcon from "../../assets/header/searchIcon.png";
+import moreIcon from "../../assets/header/moreIcon.png";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 

@@ -13,9 +13,9 @@ import {
   useMediaQuery,
   Alert,
 } from "@mui/material";
-import google from "../../../assets/auth/google1.png";
-import apple from "../../../assets/auth/apple.png";
-import character2 from "../../../assets/auth/character2.png";
+import google from "../../../assets/auth/googleIcon.png";
+import apple from "../../../assets/auth/appleIcon.png";
+import character2 from "../../../assets/auth/char2.png";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
