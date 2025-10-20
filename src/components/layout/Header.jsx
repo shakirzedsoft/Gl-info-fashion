@@ -22,8 +22,10 @@ import downArrow from "../../assets/header/down-arrow.png";
 import searchIcon from "../../assets/header/search.png";
 import moreIcon from "../../assets/header/more.png";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
+  const navigate = useNavigate();
   const [scrollValue, setScrollValue] = useState();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -39,6 +41,10 @@ function Header() {
     const scrollY = window.scrollY;
     setScrollValue(scrollY);
   });
+
+   const navigateTo = () => {
+    navigate("/products");
+  };
 
   return (
     <>
@@ -123,7 +129,9 @@ function Header() {
                 sx={{
                   objectFit: "contain",
                   width: "auto",
+                  //  border:"2px solid orange",
                 }}
+                onClick={() => navigateTo()}
               />
 
               {/* Right side icons */}
@@ -212,7 +220,10 @@ function Header() {
                 sx={{
                   objectFit: "contain",
                   width: "230px",
+                  // border:"2px solid orange",
+                  cursor:"pointer"
                 }}
+                 onClick={() => navigateTo()}
               />
 
               {/* Right side icons */}
