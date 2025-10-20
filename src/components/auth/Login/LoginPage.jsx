@@ -13,34 +13,28 @@ import {
   useMediaQuery,
   Alert,
 } from "@mui/material";
-import google from "../assets/google1.png";
-import apple from "../assets/apple.png";
-import character2 from "../assets/character2.png";
-import { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import google from "../../../assets/auth/google1.png";
+import apple from "../../../assets/auth/apple.png";
+import character1 from "../../../assets/auth/character1.png";
+import { useAuth } from "../../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import CircularProgress from '@mui/material/CircularProgress';
 
-export default function SignUpPage() {
+export default function LoginPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [error, setError] = useState("");
-  const { signup } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
-  // const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
-
-  const registerSchema = yup.object({
+  const loginSchema = yup.object({
     email: yup
       .string()
       .email("Please enter a valid email address")
       .required("Email is required"),
-    name: yup
-      .string()
-      .matches(/^[a-zA-Z\s]*$/, "Please enter a valid name")
-      .required("Name is required"),
     password: yup
       .string()
       .min(6, "Password must be at least 6 characters")
@@ -51,36 +45,38 @@ export default function SignUpPage() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: yupResolver(registerSchema),
+    resolver: yupResolver(loginSchema),
   });
 
-  const getHandleErrors = (error) => {
-    switch (error.message) {
-      case "Firebase: Error (auth/email-already-in-use).":
-        return "Email already Exits";
-      case "Firebase: Error (auth/name-already-in-use).":
-        return "Name already Exits";
+  const getErrorMessage = (error) => {
+    if (!error?.code) return "Something went wrong. Please try again.";
+
+    switch (error.code) {
+      case "auth/invalid-credential":
+      case "auth/wrong-password":
+        return "Invalid email or password. Please try again.";
+      case "auth/user-not-found":
+        return "No account found with this email.";
+      case "auth/too-many-requests":
+        return "Too many failed attempts. Please try again later.";
+      case "auth/network-request-failed":
+        return "Network error. Please check your internet connection.";
       default:
-        return "An unknown error occurred"; // Added default case
+        return "Failed to login. Please try again.";
     }
   };
-
 
   const onSubmit = async (data) => {
     try {
       setError("");
-      await signup(data.email, data.password, data.name, {
-        email: data.email,
-        password: data.password,
-        name: data.name,
-      });
-
-      console.log("Signup success, navigating...");
-      navigate("/login");
+      await login(data.email, data.password);
+      navigate("/products");
     } catch (error) {
-      setError(getHandleErrors(error) || "Failed to create account");
+      console.error("Login error:", error);
+      setError(getErrorMessage(error));
     }
   };
+
   return (
     <Box
       sx={{
@@ -88,8 +84,9 @@ export default function SignUpPage() {
         width: "100%",
         display: "flex",
         overflow: "hidden",
-        px: isMobile && 3,
       }}
+      component="form"
+      onSubmit={handleSubmit(onSubmit)}
     >
       <Stack
         direction={isMobile ? "column" : "row"}
@@ -105,21 +102,22 @@ export default function SignUpPage() {
             height: "100%",
             display: "flex",
             alignItems: "center",
+            px: isMobile && 3,
             justifyContent: "center",
           }}
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
         >
           <Box sx={{ width: "100%", maxWidth: 420 }}>
             <Stack mb={5}>
-              <Typography fontSize={32} fontWeight={500} gutterBottom>
-                Get Started Now
+              <Typography variant="h4" fontWeight={500} gutterBottom>
+                Welcome back!
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                Enter your credentials to access your account.
               </Typography>
             </Stack>
-
-            {(error || errors?.name?.message || errors?.email?.message || errors?.password?.message) && (
+            {(error || errors?.email?.message || errors?.password?.message) && (
               <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
-                {error || errors?.name?.message || errors?.email?.message || errors?.password?.message}
+                {error || errors?.email?.message || errors?.password?.message}
               </Alert>
             )}
 
@@ -132,36 +130,13 @@ export default function SignUpPage() {
                     fontWeight: 500,
                   }}
                 >
-                  Name
-                </InputLabel>
-                <input
-                  type="text"
-                  {...register("name")}
-                  placeholder="Enter your name"
-                  // required
-                  style={{
-                    height: "40px",
-                    border: "1px solid #D9D9D9",
-                    borderRadius: "4px",
-                    padding: "5px 10px",
-                    outline: "none",
-                  }}
-                />
-              </Stack>
-              <Stack>
-                <InputLabel
-                  sx={{
-                    color: "#000000",
-                    fontWeight: 500,
-                  }}
-                >
                   Email address
                 </InputLabel>
                 <input
                   type="email"
+                  name="email"
                   {...register("email")}
                   placeholder="Enter your email"
-                  // required
                   style={{
                     height: "40px",
                     border: "1px solid #D9D9D9",
@@ -173,20 +148,35 @@ export default function SignUpPage() {
               </Stack>
 
               <Stack>
-                <Stack direction="row" justifyContent="space-between">
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="end"
+                >
                   <InputLabel
                     sx={{
-                      color: "#000000",
                       fontWeight: 500,
+
+                      color: "#000000",
                     }}
                   >
                     Password
                   </InputLabel>
+                  <Link
+                    href="#"
+                    underline="hover"
+                    sx={{
+                      fontSize: "10px",
+                      fontWeight: 500,
+                      color: "0C2A92",
+                    }}
+                  >
+                    forgot password
+                  </Link>
                 </Stack>
                 <input
                   type="password"
                   placeholder="Password"
-                  // required
                   {...register("password")}
                   style={{
                     height: "40px",
@@ -202,16 +192,7 @@ export default function SignUpPage() {
                 control={<Checkbox size="small" />}
                 label={
                   <Typography fontSize="12px" fontWeight={500}>
-                    I agree to the{" "}
-                    <Typography
-                      component="span"
-                      sx={{
-                        textDecoration: "underline",
-                        fontSize: "12px",
-                      }}
-                    >
-                      terms & policy
-                    </Typography>
+                    Remember for 30 days
                   </Typography>
                 }
               />
@@ -228,7 +209,8 @@ export default function SignUpPage() {
                   "&:hover": { bgcolor: "#333" },
                 }}
               >
-                {isSubmitting ? <CircularProgress size="25px" color="white" /> : "Sign Up"}
+                {isSubmitting ? <CircularProgress size="25px" color="white"/>  : "LogIn"}
+                
               </Button>
             </Stack>
 
@@ -268,8 +250,8 @@ export default function SignUpPage() {
             <Box textAlign="center" mt={4}>
               <Typography variant="body2">
                 Don't have an account?{" "}
-                <Link href="/login" underline="hover">
-                  Sign In
+                <Link href="/sign-up" underline="hover">
+                  Sign Up
                 </Link>
               </Typography>
             </Box>
@@ -290,7 +272,7 @@ export default function SignUpPage() {
             }}
           >
             <img
-              src={character2}
+              src={character1}
               alt="Character"
               style={{
                 width: "100%",

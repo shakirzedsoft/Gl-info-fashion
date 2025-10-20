@@ -12,7 +12,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import ProdCard from "./ProdCard";
+import ProdCard from "./ProductCard";
 
 const ProductGrid = () => {
   // Sample product data

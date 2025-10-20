@@ -1,7 +1,7 @@
 import { Grid, Stack, useMediaQuery, useTheme } from "@mui/material";
 import React from "react";
-import Filters from "./filters";
-import ProductGrid from "./productCard";
+import Filters from "./FilterComp";
+import ProductGrid from "./ItemCard";
 
 function Products() {
   const theme = useTheme();

@@ -13,28 +13,34 @@ import {
   useMediaQuery,
   Alert,
 } from "@mui/material";
-import google from "../assets/google1.png";
-import apple from "../assets/apple.png";
-import character1 from "../assets/character1.png";
-import { useAuth } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import google from "../../../assets/auth/google1.png";
+import apple from "../../../assets/auth/apple.png";
+import character2 from "../../../assets/auth/character2.png";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import CircularProgress from '@mui/material/CircularProgress';
+import { useAuth } from "../../../contexts/AuthContext";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [error, setError] = useState("");
-  const { login } = useAuth();
+  const { signup } = useAuth();
   const navigate = useNavigate();
-  const loginSchema = yup.object({
+  // const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
+
+  const registerSchema = yup.object({
     email: yup
       .string()
       .email("Please enter a valid email address")
       .required("Email is required"),
+    name: yup
+      .string()
+      .matches(/^[a-zA-Z\s]*$/, "Please enter a valid name")
+      .required("Name is required"),
     password: yup
       .string()
       .min(6, "Password must be at least 6 characters")
@@ -45,38 +51,36 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: yupResolver(loginSchema),
+    resolver: yupResolver(registerSchema),
   });
 
-  const getErrorMessage = (error) => {
-    if (!error?.code) return "Something went wrong. Please try again.";
-
-    switch (error.code) {
-      case "auth/invalid-credential":
-      case "auth/wrong-password":
-        return "Invalid email or password. Please try again.";
-      case "auth/user-not-found":
-        return "No account found with this email.";
-      case "auth/too-many-requests":
-        return "Too many failed attempts. Please try again later.";
-      case "auth/network-request-failed":
-        return "Network error. Please check your internet connection.";
+  const getHandleErrors = (error) => {
+    switch (error.message) {
+      case "Firebase: Error (auth/email-already-in-use).":
+        return "Email already Exits";
+      case "Firebase: Error (auth/name-already-in-use).":
+        return "Name already Exits";
       default:
-        return "Failed to login. Please try again.";
+        return "An unknown error occurred"; // Added default case
     }
   };
+
 
   const onSubmit = async (data) => {
     try {
       setError("");
-      await login(data.email, data.password);
-      navigate("/products");
+      await signup(data.email, data.password, data.name, {
+        email: data.email,
+        password: data.password,
+        name: data.name,
+      });
+
+      console.log("Signup success, navigating...");
+      navigate("/login");
     } catch (error) {
-      console.error("Login error:", error);
-      setError(getErrorMessage(error));
+      setError(getHandleErrors(error) || "Failed to create account");
     }
   };
-
   return (
     <Box
       sx={{
@@ -84,9 +88,8 @@ export default function LoginPage() {
         width: "100%",
         display: "flex",
         overflow: "hidden",
+        px: isMobile && 3,
       }}
-      component="form"
-      onSubmit={handleSubmit(onSubmit)}
     >
       <Stack
         direction={isMobile ? "column" : "row"}
@@ -102,22 +105,21 @@ export default function LoginPage() {
             height: "100%",
             display: "flex",
             alignItems: "center",
-            px: isMobile && 3,
             justifyContent: "center",
           }}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
         >
           <Box sx={{ width: "100%", maxWidth: 420 }}>
             <Stack mb={5}>
-              <Typography variant="h4" fontWeight={500} gutterBottom>
-                Welcome back!
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Enter your credentials to access your account.
+              <Typography fontSize={32} fontWeight={500} gutterBottom>
+                Get Started Now
               </Typography>
             </Stack>
-            {(error || errors?.email?.message || errors?.password?.message) && (
+
+            {(error || errors?.name?.message || errors?.email?.message || errors?.password?.message) && (
               <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
-                {error || errors?.email?.message || errors?.password?.message}
+                {error || errors?.name?.message || errors?.email?.message || errors?.password?.message}
               </Alert>
             )}
 
@@ -130,13 +132,36 @@ export default function LoginPage() {
                     fontWeight: 500,
                   }}
                 >
+                  Name
+                </InputLabel>
+                <input
+                  type="text"
+                  {...register("name")}
+                  placeholder="Enter your name"
+                  // required
+                  style={{
+                    height: "40px",
+                    border: "1px solid #D9D9D9",
+                    borderRadius: "4px",
+                    padding: "5px 10px",
+                    outline: "none",
+                  }}
+                />
+              </Stack>
+              <Stack>
+                <InputLabel
+                  sx={{
+                    color: "#000000",
+                    fontWeight: 500,
+                  }}
+                >
                   Email address
                 </InputLabel>
                 <input
                   type="email"
-                  name="email"
                   {...register("email")}
                   placeholder="Enter your email"
+                  // required
                   style={{
                     height: "40px",
                     border: "1px solid #D9D9D9",
@@ -148,35 +173,20 @@ export default function LoginPage() {
               </Stack>
 
               <Stack>
-                <Stack
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="end"
-                >
+                <Stack direction="row" justifyContent="space-between">
                   <InputLabel
                     sx={{
-                      fontWeight: 500,
-
                       color: "#000000",
+                      fontWeight: 500,
                     }}
                   >
                     Password
                   </InputLabel>
-                  <Link
-                    href="#"
-                    underline="hover"
-                    sx={{
-                      fontSize: "10px",
-                      fontWeight: 500,
-                      color: "0C2A92",
-                    }}
-                  >
-                    forgot password
-                  </Link>
                 </Stack>
                 <input
                   type="password"
                   placeholder="Password"
+                  // required
                   {...register("password")}
                   style={{
                     height: "40px",
@@ -192,7 +202,16 @@ export default function LoginPage() {
                 control={<Checkbox size="small" />}
                 label={
                   <Typography fontSize="12px" fontWeight={500}>
-                    Remember for 30 days
+                    I agree to the{" "}
+                    <Typography
+                      component="span"
+                      sx={{
+                        textDecoration: "underline",
+                        fontSize: "12px",
+                      }}
+                    >
+                      terms & policy
+                    </Typography>
                   </Typography>
                 }
               />
@@ -209,8 +228,7 @@ export default function LoginPage() {
                   "&:hover": { bgcolor: "#333" },
                 }}
               >
-                {isSubmitting ? <CircularProgress size="25px" color="white"/>  : "LogIn"}
-                
+                {isSubmitting ? <CircularProgress size="25px" color="white" /> : "Sign Up"}
               </Button>
             </Stack>
 
@@ -250,8 +268,8 @@ export default function LoginPage() {
             <Box textAlign="center" mt={4}>
               <Typography variant="body2">
                 Don't have an account?{" "}
-                <Link href="/sign-up" underline="hover">
-                  Sign Up
+                <Link href="/login" underline="hover">
+                  Sign In
                 </Link>
               </Typography>
             </Box>
@@ -272,7 +290,7 @@ export default function LoginPage() {
             }}
           >
             <img
-              src={character1}
+              src={character2}
               alt="Character"
               style={{
                 width: "100%",

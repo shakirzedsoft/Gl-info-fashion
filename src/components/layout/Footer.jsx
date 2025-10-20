@@ -11,13 +11,13 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import fb from "../assets/footer/fb.png";
-import instagram from "../assets/footer/instagram.png";
-import youtube from "../assets/footer/youtube.png";
-import x from "../assets/footer/x.png";
-import Uk from "../assets/footer/Uk.png";
-import downArrow from "../assets/down-arrow.png";
-import cards from "../assets/footer/cards.png";
+import fb from "../../assets/footer/fb.png";
+import instagram from "../../assets/footer/insta.png";
+import youtube from "../../assets/footer/youtube.png";
+import x from "../../assets/footer/x.png";
+import Uk from "../../assets/footer/Uk.png";
+import downArrow from "../../assets/header/down-arrow.png";
+import cards from "../../assets/footer/cards.png";
 
 const Footer = () => {
   const theme = useTheme();

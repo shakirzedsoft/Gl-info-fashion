@@ -1,18 +1,17 @@
 import { Stack } from "@mui/material";
-import Products from "./pages/product/allProducts";
+import Products from "./components/product/ProductsListPage";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import LoginPage from "./auth/Login";
-import SignUpPage from "./auth/SignUp";
-import Header from "./layout/Header";
-import Footer from "./layout/Footer";
-import ProductSinglePage from "./pages/product/ProductSingleview";
-import PublicRoute from "./auth/PublicRouter";
-import ProfileSection from "./pages/profile/profile";
-import PrivateRoute from "./auth/PrivateRoute";
+import LoginPage from "./components/auth/Login/LoginPage";
+import SignUpPage from "./components/auth/SignUp/SignUpPage";
+import Header from "./components/layout/Header";
+import Footer from "./components/layout/Footer";
+import ProductSinglePage from "./components/product/ProductSinglePage";
+import PublicRoute from "./components/auth/PublicRouter";
+import ProfileSection from "./components/profile/ProfilePage";
+import PrivateRoute from "./components/auth/PrivateRoute";
 
 function App() {
   return (
-    
     
     <Stack>
       <BrowserRouter>

@@ -11,15 +11,16 @@ import {
   useTheme,
 } from "@mui/material";
 
-import wishlistImg from "../../src/assets/Wishlist.png";
-import cartImg from "../../src/assets/Cart.png";
-import userImg from "../../src/assets/User.png";
-import location from "../assets/location.png";
-import logo from "../assets/logo.png";
-import logoMob from "../assets/logo-mob.png";
-import downArrow from "../assets/down-arrow.png";
-import searchIcon from "../assets/search.png";
-import moreIcon from "../assets/more.png";
+import wishlistImg from "../../assets/header/Wishlist.png";
+import cartImg from "../../assets/header/Cart.png";
+import userImg from "../../assets/header/User.png";
+import location from "../../assets/header/location.png";
+
+import logo from "../../assets/header/logo.png";
+import logoMob from "../../assets/header/logo-mob.png";
+import downArrow from "../../assets/header/down-arrow.png";
+import searchIcon from "../../assets/header/search.png";
+import moreIcon from "../../assets/header/more.png";
 import React, { useState } from "react";
 
 function Header() {
