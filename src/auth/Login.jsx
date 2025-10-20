@@ -21,6 +21,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function LoginPage() {
   const theme = useTheme();
@@ -208,7 +209,8 @@ export default function LoginPage() {
                   "&:hover": { bgcolor: "#333" },
                 }}
               >
-                {isSubmitting ? "loading" : "LogIn"}
+                {isSubmitting ? <CircularProgress size="25px" color="white"/>  : "LogIn"}
+                
               </Button>
             </Stack>
 

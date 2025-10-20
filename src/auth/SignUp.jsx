@@ -21,6 +21,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import CircularProgress from '@mui/material/CircularProgress';
 
 export default function SignUpPage() {
   const theme = useTheme();
@@ -48,7 +49,7 @@ export default function SignUpPage() {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(registerSchema),
   });
@@ -64,7 +65,6 @@ export default function SignUpPage() {
     }
   };
 
-  // Call getHandleErrors when setting the error message
 
   const onSubmit = async (data) => {
     try {
@@ -76,7 +76,7 @@ export default function SignUpPage() {
       });
 
       console.log("Signup success, navigating...");
-      navigate("/login"); // should work if route exists
+      navigate("/login");
     } catch (error) {
       setError(getHandleErrors(error) || "Failed to create account");
     }
@@ -116,9 +116,10 @@ export default function SignUpPage() {
                 Get Started Now
               </Typography>
             </Stack>
-            {error && (
+
+            {(error || errors?.name?.message || errors?.email?.message || errors?.password?.message) && (
               <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
-                {error}
+                {error || errors?.name?.message || errors?.email?.message || errors?.password?.message}
               </Alert>
             )}
 
@@ -137,6 +138,7 @@ export default function SignUpPage() {
                   type="text"
                   {...register("name")}
                   placeholder="Enter your name"
+                  // required
                   style={{
                     height: "40px",
                     border: "1px solid #D9D9D9",
@@ -159,6 +161,7 @@ export default function SignUpPage() {
                   type="email"
                   {...register("email")}
                   placeholder="Enter your email"
+                  // required
                   style={{
                     height: "40px",
                     border: "1px solid #D9D9D9",
@@ -183,6 +186,7 @@ export default function SignUpPage() {
                 <input
                   type="password"
                   placeholder="Password"
+                  // required
                   {...register("password")}
                   style={{
                     height: "40px",
@@ -224,7 +228,7 @@ export default function SignUpPage() {
                   "&:hover": { bgcolor: "#333" },
                 }}
               >
-                {isSubmitting ? "loading..." : "Sign Up"}
+                {isSubmitting ? <CircularProgress size="25px" color="white" /> : "Sign Up"}
               </Button>
             </Stack>
 

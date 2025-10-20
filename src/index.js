@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.js";
+import App from "./App.jsx";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/AuthContext.jsx";
 
 // const theme = createTheme({
 //   palette: {

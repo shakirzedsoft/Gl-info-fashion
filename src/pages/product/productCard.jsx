@@ -78,7 +78,7 @@ const ProductGrid = () => {
   }, []); // Empty array = run only once
 
   const loadingComp = isMobile ? (
-    <Stack direction="row" spacing={2}>
+    <Stack direction="row" justifyContent={'space-evenly'} spacing={2}>
       <Skeleton
         variant="rectangular"
         height={200}
