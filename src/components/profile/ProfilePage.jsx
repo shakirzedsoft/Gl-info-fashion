@@ -15,7 +15,9 @@ import {
   Button,
   Badge,
   Skeleton,
-  Tooltip
+  Tooltip,
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -28,6 +30,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate } from 'react-router-dom';
 
 export default function ProfileSection() {
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
   const { logout, userData, loading } = useAuth();
 
@@ -88,7 +92,7 @@ export default function ProfileSection() {
         alignItems: 'center',
         justifyContent: 'center',
         p: 2,
-        mt: 10
+        mt: 10,
       }}
     >
 
@@ -101,7 +105,12 @@ export default function ProfileSection() {
         />
       ) : (
 
-        <Container maxWidth="sm">
+        <Container maxWidth="sm"
+        sx={{ 
+          // border:"2px solid orange",
+          mt:isMobile && "10%",
+        }}
+        >
           {/* Header */}
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 6 }}>
             <Box>

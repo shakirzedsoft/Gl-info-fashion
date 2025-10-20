@@ -256,7 +256,8 @@ const Footer = () => {
             component="img"
             src={cards}
             sx={{
-              width: "auto",
+              //  width: "auto",
+              width: isMobile ? "100%" :"auto",
               height: isMobile ? "69px" : "73px",
             }}
           />
