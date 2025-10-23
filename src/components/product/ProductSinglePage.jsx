@@ -29,6 +29,8 @@ import {
 import locationIcon from "../../assets/header/locationIcon.png";
 import downArrow from "../../assets/header/down-arrowIcon.png";
 import ProdCard from "./ProductCard";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { useAuth } from "../../contexts/AuthContext";
 
 function TabPanel({ children, value, index }) {
   return (
@@ -40,9 +42,13 @@ function TabPanel({ children, value, index }) {
 
 export default function ProductSinglePage() {
   //shakir
+    const { handleClick } = useAuth();
   const { id } = useParams();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  const [favorites, setFavorites] = useState(storedFavorites);
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState("6");
@@ -52,7 +58,8 @@ export default function ProductSinglePage() {
   const [productLoading, setProductLoading] = useState(true);
 
   const images = [
-    "https://www.mercywear.in/cdn/shop/files/WhatsAppImage2024-10-29at02.23.15_6834772e.jpg?v=1730150266&width=600",
+    singleProduct?.image,
+    // "https://www.mercywear.in/cdn/shop/files/WhatsAppImage2024-10-29at02.23.15_6834772e.jpg?v=1730150266&width=600",
     "https://image.hm.com/assets/hm/0a/a7/0aa7c527cffd88cd134aecf94cdc476c8d584897.jpg?imwidth=1260",
     "https://campussutra.com/cdn/shop/files/CSMOVSRT7866_1_0991f619-d346-498a-8006-2ca92f23cc66.jpg?v=1734419880",
   ];
@@ -60,29 +67,17 @@ export default function ProductSinglePage() {
   const sizes = ["6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26"];
 
   const [tabValue, setTabValue] = useState(0);
+  const [cartItems, setCartItems] = useState([]);
+  const [cartIds, setCartIds] = useState(() => {
+    const stored = localStorage.getItem("cartIds");
+    return stored ? JSON.parse(stored) : [];
+  });
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
 
-  useEffect(() => {
-    // Fetch data when the component mounts
-    fetch("https://fakestoreapi.com/products")
-      .then((response) => response.json())
-      .then((data) => {
-        setAllProducts(data);
-        setProductLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching users:", error);
-        setProductLoading(false);
-      });
-  }, []); // Empty array = run only once
 
-  useEffect(() => {
-    const product = allProducts?.find((p) => p?.id === Number(id));
-    setSingleProduct(product);
-  }, [id, allProducts]);
 
   const categories = [
     "Black Loungewear",
@@ -108,6 +103,53 @@ export default function ProductSinglePage() {
 
   const rating = singleProduct?.rating?.rate;
   const count = singleProduct?.rating?.count;
+
+  const favoriteBtn = (id) => {
+    setFavorites((prev) =>
+      prev.includes(id)
+        ? prev.filter((favId) => favId !== id)
+        : [...prev, id]
+    );
+      handleClick()
+  }
+
+  //addToCartBtn
+  const addToCartBtn = (id) => {
+    if (!cartIds.includes(id)) {
+      setCartIds((prev) => [...prev, id]);
+      console.log(`Added to cart: ${id}`);
+    } else {
+      console.log(`Already in cart: ${id}`);
+    }
+    handleClick()
+    
+  }
+
+  useEffect(() => {
+    // Fetch data when the component mounts
+    fetch("https://fakestoreapi.com/products")
+      .then((response) => response.json())
+      .then((data) => {
+        setAllProducts(data);
+        setProductLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+        setProductLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    const product = allProducts?.find((p) => p?.id === Number(id));
+    setSingleProduct(product);
+  }, [id, allProducts]);
+
+  useEffect(() => {
+    localStorage.setItem("favorites", JSON.stringify(favorites));
+    localStorage.setItem("cartIds", JSON.stringify(cartIds));
+  }, [favorites, cartIds]);
+
+
   return (
     <Box
       sx={{
@@ -233,8 +275,8 @@ export default function ProductSinglePage() {
                 ) : (
                   <CardMedia
                     component="img"
-                    // image={images[selectedImage]}
-                    image={singleProduct?.image}
+                    image={images[selectedImage]}
+                    // image={singleProduct?.image}
                     alt="Main product view"
                     sx={{
                       height: isMobile ? "100%" : 600,
@@ -256,7 +298,7 @@ export default function ProductSinglePage() {
                 variant="rectangular"
                 height={600}
                 width="100%"
-                sx={{ borderRadius: 2, mt:isMobile && 2, mb:!isMobile && 2 }}
+                sx={{ borderRadius: 2, mt: isMobile && 2, mb: !isMobile && 2 }}
               />
             ) : (
               <Box>
@@ -315,8 +357,11 @@ export default function ProductSinglePage() {
                       sx={{
                         "&:hover": { color: "error.main" },
                       }}
+
+                      onClick={() => favoriteBtn(singleProduct?.id)}
                     >
-                      <FavoriteBorder />
+                      {favorites?.includes(singleProduct?.id) ? <FavoriteIcon sx={{ color: "red" }} /> : <FavoriteBorder />}
+                      {/* <FavoriteBorder /> */}
                     </IconButton>
                     <Typography variant="body2">Add to Wish List</Typography>
                   </Box>
@@ -442,6 +487,7 @@ export default function ProductSinglePage() {
                         bgcolor: "#333",
                       },
                     }}
+                    onClick={() => addToCartBtn(singleProduct?.id)}
                   >
                     Add to Cart
                   </Button>

@@ -1,5 +1,6 @@
 import {
   AppBar,
+  Badge,
   Box,
   CardMedia,
   Link,
@@ -21,18 +22,32 @@ import logoMob from "../../assets/header/logo-mobIcon.png";
 import downArrow from "../../assets/header/down-arrowIcon.png";
 import searchIcon from "../../assets/header/searchIcon.png";
 import moreIcon from "../../assets/header/moreIcon.png";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 function Header() {
+
+
+
   const navigate = useNavigate();
   const [scrollValue, setScrollValue] = useState();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const { badgeUpdate } = useAuth();
+
+  const [favorites, setFavorites] = useState(() => {
+    return JSON.parse(localStorage.getItem("favorites") || "[]");
+  });
+
+  const [cart, setCart] = useState(() => {
+    return JSON.parse(localStorage.getItem("cartIds") || "[]");
+  });
+
   const headerIcons = [
-    { image: wishlistImg },
-    { image: cartImg },
-    { image: userImg, isLink: true },
+    { image: wishlistImg, isLink: true, link: "/wishlist", name: 'wishlist', length: favorites?.length },
+    { image: cartImg, isLink: true, link: "/cart", name: "cart", length: cart?.length },
+    { image: userImg, isLink: true, link: "/profile", name: "profile" },
     isMobile && { image: moreIcon, isMobile: true },
   ].filter(Boolean);
   const subHeaderData = ["Sale", "Womens", "Mens", "Girls", "Christmas"];
@@ -42,9 +57,28 @@ function Header() {
     setScrollValue(scrollY);
   });
 
-   const navigateTo = () => {
+  const navigateToProducts = () => {
     navigate("/products");
   };
+
+  const handleClick = (link) => {
+    navigate(link);
+  };
+
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const updatedFavorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+      setFavorites(updatedFavorites);
+
+      const updatedCarts = JSON.parse(localStorage.getItem("cartIds") || "[]");
+      setCart(updatedCarts)
+
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [badgeUpdate]);
+
 
   return (
     <>
@@ -131,19 +165,24 @@ function Header() {
                   width: "auto",
                   //  border:"2px solid orange",
                 }}
-                onClick={() => navigateTo()}
+                onClick={() => navigateToProducts()}
               />
 
               {/* Right side icons */}
               <Stack direction="row" spacing={2} alignItems="center">
-                {headerIcons?.map((image) => (
-                  <Stack spacing={2}>
+                {headerIcons?.map((image, index) => (
+                  <Stack spacing={2}
+                    key={index}
+                  >
                     {image?.isLink ? (
-                      <Link
-                        href="/profile"
-                        sx={{
-                          cursor: "pointer",
-                        }}
+                      // <Link
+                      //   href={image?.link}
+                      //   sx={{
+                      //     cursor: "pointer",
+                      //   }}
+                      // >
+                      <Badge badgeContent={image?.length} color="secondary"
+                        onClick={() => handleClick(image?.link)}
                       >
                         <CardMedia
                           component="img"
@@ -151,7 +190,9 @@ function Header() {
                           height={25}
                           width={25}
                         />
-                      </Link>
+                      </Badge>
+
+                      // </Link>
                     ) : (
                       <CardMedia
                         component="img"
@@ -221,9 +262,9 @@ function Header() {
                   objectFit: "contain",
                   width: "230px",
                   // border:"2px solid orange",
-                  cursor:"pointer"
+                  cursor: "pointer"
                 }}
-                 onClick={() => navigateTo()}
+                onClick={() => navigateToProducts()}
               />
 
               {/* Right side icons */}
@@ -231,20 +272,32 @@ function Header() {
                 {headerIcons?.map((image, k) => (
                   <Stack spacing={2} key={k}>
                     {image?.isLink ? (
-                      <Tooltip title="Profile" arrow>
-                      <Link
-                        href="/profile"
+                      <Tooltip title={image?.name} arrow
                         sx={{
                           cursor: "pointer",
                         }}
                       >
-                        <CardMedia
-                          component="img"
-                          src={image?.image}
-                          height={25}
-                          width={25}
-                        />
-                      </Link>
+
+                        {/* <Link
+                          href={image?.link}
+                          sx={{
+                            cursor: "pointer",
+                          }}
+                        > */}
+                        
+
+                        <Badge badgeContent={image?.length} color="secondary"
+                          onClick={() => handleClick(image?.link)}
+                        >
+                          <CardMedia
+                            component="img"
+                            src={image?.image}
+                            height={25}
+                            width={25}
+                          />
+                        </Badge>
+
+                        {/* </Link> */}
                       </Tooltip>
                     ) : (
                       <CardMedia

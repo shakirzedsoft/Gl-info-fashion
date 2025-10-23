@@ -9,13 +9,42 @@ import ProductSinglePage from "./components/product/ProductSinglePage";
 import PublicRoute from "./components/auth/PublicRouter";
 import ProfileSection from "./components/profile/ProfilePage";
 import PrivateRoute from "./components/auth/PrivateRoute";
+import WishlistPage from "./components/wishlist/WishlistPage";
+import CartPage from "./components/cart/CartPage";
 
 function App() {
   return (
-    
+
     <Stack>
       <BrowserRouter>
         <Routes>
+
+          <Route
+            path="/wishlist"
+            element={
+              <PrivateRoute>
+                <>
+                  <Header />
+                  <WishlistPage />
+                  <Footer />
+                </>
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/cart"
+            element={
+              <PrivateRoute>
+                <>
+                  <Header />
+                  <CartPage />
+                  <Footer />
+                </>
+              </PrivateRoute>
+            }
+          />
+
           <Route
             path="/profile"
             element={

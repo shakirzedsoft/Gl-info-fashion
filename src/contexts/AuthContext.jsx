@@ -22,6 +22,7 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [badgeUpdate,isBadgeUpdate] = useState(false);
 
   const signup = async (email, password, userData) => {
     try {
@@ -95,6 +96,10 @@ export function AuthProvider({ children }) {
     }
   }, [userData]);
 
+  const handleClick =()=>{
+    isBadgeUpdate(!badgeUpdate)
+  }
+
   const value = {
     currentUser,
     userData,
@@ -102,6 +107,8 @@ export function AuthProvider({ children }) {
     login,
     logout,
     loading,
+    handleClick,
+    badgeUpdate
   };
 
   return (
