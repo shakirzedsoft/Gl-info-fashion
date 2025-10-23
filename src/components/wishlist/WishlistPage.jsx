@@ -20,8 +20,11 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import CartIcon from "../../assets/header/CartIcon.png";
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function WishlistPage() {
+  const navigate = useNavigate();
+
     const { handleClick } = useAuth();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -80,6 +83,10 @@ export default function WishlistPage() {
 
     };
 
+    const navigateToProduct = (id) => {
+    navigate(`/product/${id}`);
+  };
+
 
 
     const totalPrice = favoriteProducts?.reduce((sum, item) => sum + item.price, 0);
@@ -114,7 +121,7 @@ export default function WishlistPage() {
 
 
     return (
-        <Container maxWidth="md" sx={{ py: 3, mt: 20 }}
+        <Container maxWidth="md" sx={{ py: 3, mt: isMobile ? 18 : 20 }}
         >
             {/* Header */}
             <Box sx={{ mb: 4 }}>
@@ -177,8 +184,10 @@ export default function WishlistPage() {
                                                 width: 120,
                                                 height: 120,
                                                 border: '1px solid',
-                                                borderColor: 'divider'
+                                                borderColor: 'divider',
+                                                cursor:"pointer"
                                             }}
+                                         onClick={() => navigateToProduct(item?.id)}
                                         />
 
                                         {/* Product Details */}

@@ -32,8 +32,10 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useAuth } from '../../contexts/AuthContext';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import { useNavigate } from 'react-router-dom';
 
 export default function CartPage() {
+      const navigate = useNavigate();
     const { handleClick } = useAuth();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -87,6 +89,12 @@ export default function CartPage() {
     const deliveryFee = subtotal > 100 ? 0 : 15;
     const total = subtotal - discount + deliveryFee;
 
+
+    const navigateTo = (id) => {
+    navigate(`/product/${id}`);
+  };
+
+
     useEffect(() => {
         fetch("https://fakestoreapi.com/products")
             .then((response) => response.json())
@@ -120,7 +128,7 @@ export default function CartPage() {
 
 
     return (
-        <Box sx={{ py: 3, mt: 20 }}>
+        <Box sx={{ py: 3, mt: isMobile ? 18 : 20 }}>
             <Container maxWidth="lg">
                 {/* Page Header */}
                 <Box sx={{ mb: 4 }}>
@@ -175,7 +183,10 @@ export default function CartPage() {
                                                 >
                                                     {/* Product Image */}
                                                     <Grid item xs={12} sm={3}>
-                                                        <Card sx={{ borderRadius: 2, overflow: 'hidden' }}>
+                                                        <Card sx={{ borderRadius: 2, overflow: 'hidden',cursor:"pointer"}}
+                                                        
+                                                        onClick={() => navigateTo(item?.id)}
+                                                        >
                                                             <CardMedia
                                                                 component="img"
                                                                 image={item?.image}

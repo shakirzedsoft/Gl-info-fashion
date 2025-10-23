@@ -3,7 +3,11 @@ import {
   Badge,
   Box,
   CardMedia,
+  Drawer,
   Link,
+  List,
+  ListItem,
+  ListItemText,
   Stack,
   Toolbar,
   Tooltip,
@@ -22,19 +26,18 @@ import logoMob from "../../assets/header/logo-mobIcon.png";
 import downArrow from "../../assets/header/down-arrowIcon.png";
 import searchIcon from "../../assets/header/searchIcon.png";
 import moreIcon from "../../assets/header/moreIcon.png";
-import React, { useEffect, useState } from "react";
+import React, { startTransition, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { Close } from "@mui/icons-material";
 
 function Header() {
-
-
 
   const navigate = useNavigate();
   const [scrollValue, setScrollValue] = useState();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const { badgeUpdate } = useAuth();
+  const { badgeUpdate, logout, userData, loading } = useAuth();
 
   const [favorites, setFavorites] = useState(() => {
     return JSON.parse(localStorage.getItem("favorites") || "[]");
@@ -44,13 +47,24 @@ function Header() {
     return JSON.parse(localStorage.getItem("cartIds") || "[]");
   });
 
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const handleMobileMenuClose = () => setMobileMenuOpen(false);
+  const handleMobileMenuOpen = () => setMobileMenuOpen(true);
+
   const headerIcons = [
     { image: wishlistImg, isLink: true, link: "/wishlist", name: 'wishlist', length: favorites?.length },
     { image: cartImg, isLink: true, link: "/cart", name: "cart", length: cart?.length },
     { image: userImg, isLink: true, link: "/profile", name: "profile" },
     isMobile && { image: moreIcon, isMobile: true },
   ].filter(Boolean);
-  const subHeaderData = ["Sale", "Womens", "Mens", "Girls", "Christmas"];
+  // const subHeaderData = ["Sale", "Womens", "Mens", "Girls", "Christmas"];
+   
+  const subHeaderData =  ["Categories",
+  "Men's",
+  "Jewelry",
+  "Electronics",
+  "Women's",
+]
 
   window.addEventListener("scroll", () => {
     const scrollY = window.scrollY;
@@ -63,6 +77,17 @@ function Header() {
 
   const handleClick = (link) => {
     navigate(link);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      startTransition(() => {
+        navigate("/login");
+      });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
 
@@ -199,6 +224,7 @@ function Header() {
                         src={image?.image}
                         height={25}
                         width={25}
+                        onClick={handleMobileMenuOpen}
                       />
                     )}
                   </Stack>
@@ -206,6 +232,50 @@ function Header() {
               </Stack>
             </Stack>
           </AppBar>
+
+          {/* Mobile Menu Drawer */}
+
+          <Drawer
+            anchor="right"
+            open={mobileMenuOpen}
+            onClose={handleMobileMenuClose}
+            sx={{
+              "& .MuiDrawer-paper": {
+                width: 250,
+                boxSizing: "border-box",
+                // border:"2px solid orange"
+              },
+            }}
+          >
+            {/* <Box sx={{ p: 2, display: "flex", justifyContent: "flex-end",}}>
+              <IconButton
+                onClick={handleMobileMenuClose}
+              >
+                <Close />
+              </IconButton>
+            </Box> */}
+
+            <List sx={{ mt: "50%" }}>
+              {["Shop", "Collections", "Offers", "Support"]?.map((link) => (
+                <ListItem
+                  button
+                  key={link}
+                  onClick={() => handleMobileMenuClose()}
+                >
+                  <ListItemText primary={link} />
+                </ListItem>
+              ))}
+              <ListItem
+                button
+                onClick={() => {
+                  handleMobileMenuClose();
+                  handleLogout();
+                }}
+              >
+                <ListItemText primary="Logout" />
+              </ListItem>
+            </List>
+          </Drawer>
         </>
       ) : (
         <>
@@ -221,6 +291,7 @@ function Header() {
               pt: 2,
               minHeight: 96,
               textAlign: "center",
+              // border:"2px solid orange"
             }}
           >
             <Toolbar
@@ -284,7 +355,6 @@ function Header() {
                             cursor: "pointer",
                           }}
                         > */}
-                        
 
                         <Badge badgeContent={image?.length} color="secondary"
                           onClick={() => handleClick(image?.link)}
@@ -313,6 +383,7 @@ function Header() {
             </Toolbar>
           </AppBar>
           {/* <Divider /> */}
+
 
           <AppBar
             position="fixed"
@@ -344,6 +415,7 @@ function Header() {
                     fontSize={16}
                     display="flex"
                     alignItems="center"
+                    // border={"2px solid orange"}
                   >
                     {name}
                     <CardMedia
@@ -371,6 +443,7 @@ function Header() {
               </Stack>
             </Toolbar>
           </AppBar>
+          
         </>
       )}
     </>
